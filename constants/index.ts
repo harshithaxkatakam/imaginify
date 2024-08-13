@@ -40,6 +40,10 @@ export const navLinks = [
       icon: "/assets/icons/bag.svg",
     },
   ];
+
+  // kGm06wYIuZoE76wd - security user pwd - mongodb
+
+//   connection url: mongodb+srv://harshithaxkatakam:<password>@cluster0.7unr0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0 
   
 //   export const plans = [
 //     {
