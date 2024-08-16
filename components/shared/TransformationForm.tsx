@@ -20,7 +20,8 @@ import { CustomField } from "./CustomField";
 import { useState, useTransition } from "react";
 import { AspectRatioKey, debounce, deepMergeObjects } from "@/lib/utils";
 import MediaUploader from "./MediaUploader";
-// import { updateCredits } from "@/lib/actions/user.actions"
+import TransformedImage from "./TransformedImage";
+import { updateCredits } from "@/lib/actions/user.actions"
 
 
 export const formSchema = z.object({
@@ -31,7 +32,7 @@ export const formSchema = z.object({
   publicId: z.string(),
 })
 
-const TransformationForm = ({ action, data = null, userId, type, creditBalance, config }: TransformationFormProps) => {
+const TransformationForm = ({ action, data = null, userId, type, creditBalance, config = null }: TransformationFormProps) => {
   // https://ui.shadcn.com/docs/components/form
 
   const transformationType = transformationTypes[type];
@@ -72,7 +73,7 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
     )
     setNewTransformation(null)
     startTransition(async () => {
-      // await updateCredits(userId, creditFee) // TO DO: return to update credits
+      await updateCredits(userId, -1) // TO DO: return to update credits
     })
   }
 
@@ -166,8 +167,16 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
                 setImage={setImage}
                 publicId={field.value}
                 image={image}
-                type={type}/>
-          )}
+                type={type} />
+            )}
+          />
+          <TransformedImage
+            image={image}
+            type={type}
+            title={form.getValues().title}
+            isTransforming={isTransforming}
+            setIsTransforming={setIsTransforming}
+            transformationConfig={transformationConfig}
           />
         </div>
         <div className="flex flex-col gap-4">
