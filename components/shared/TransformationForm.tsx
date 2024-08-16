@@ -1,27 +1,26 @@
 "use client"
 
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useForm } from "react-hook-form"
+import { useForm } from "react-hook-form";
 
+import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
-  Form,
-} from "@/components/ui/form"
-import {
+  Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { defaultValues, transformationTypes, aspectRatioOptions } from "@/constants"
-import { CustomField } from "./CustomField"
-import { Select } from "../ui/select"
-import { useState, useTransition } from "react"
-import { AspectRatioKey, debounce, deepMergeObjects } from "@/lib/utils"
-import { updateCredits } from "@/lib/actions/user.actions"
+} from "@/components/ui/select";
+import { defaultValues, transformationTypes, aspectRatioOptions } from "@/constants";
+import { CustomField } from "./CustomField";
+import { useState, useTransition } from "react";
+import { AspectRatioKey, debounce, deepMergeObjects } from "@/lib/utils";
+import MediaUploader from "./MediaUploader";
+// import { updateCredits } from "@/lib/actions/user.actions"
 
 
 export const formSchema = z.object({
@@ -72,7 +71,7 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
       deepMergeObjects(newTransformation, transformationConfig)
     )
     setNewTransformation(null)
-    startTransition(async()=> {
+    startTransition(async () => {
       // await updateCredits(userId, creditFee) // TO DO: return to update credits
     })
   }
@@ -156,6 +155,21 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
             )}
           />
         }
+        <div className="media-uploader-field">
+          <CustomField
+            control={form.control}
+            name="publicId"
+            className="flex size-full flex-col"
+            render={({ field }) => (
+              <MediaUploader
+                onValueChange={field.onValueChange}
+                setImage={setImage}
+                publicId={field.id}
+                image={image}
+                type={type}/>
+          )}
+          />
+        </div>
         <div className="flex flex-col gap-4">
           <Button
             className="submit-button capitalize"
