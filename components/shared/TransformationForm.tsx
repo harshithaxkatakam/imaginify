@@ -1,26 +1,26 @@
 "use client"
 
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useForm } from "react-hook-form"
+import { useForm } from "react-hook-form";
 
+import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
-  Form,
-} from "@/components/ui/form"
-import {
+  Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { defaultValues, transformationTypes, aspectRatioOptions } from "@/constants"
-import { CustomField } from "./CustomField"
-import { Select } from "../ui/select"
-import { useState, useTransition } from "react"
-import { AspectRatioKey, debounce, deepMergeObjects } from "@/lib/utils"
+} from "@/components/ui/select";
+import { defaultValues, transformationTypes, aspectRatioOptions } from "@/constants";
+import { CustomField } from "./CustomField";
+import { useState, useTransition } from "react";
+import { AspectRatioKey, debounce, deepMergeObjects } from "@/lib/utils";
+import MediaUploader from "./MediaUploader";
+import TransformedImage from "./TransformedImage";
 import { updateCredits } from "@/lib/actions/user.actions"
 
 
@@ -32,7 +32,7 @@ export const formSchema = z.object({
   publicId: z.string(),
 })
 
-const TransformationForm = ({ action, data = null, userId, type, creditBalance, config }: TransformationFormProps) => {
+const TransformationForm = ({ action, data = null, userId, type, creditBalance, config = null }: TransformationFormProps) => {
   // https://ui.shadcn.com/docs/components/form
 
   const transformationType = transformationTypes[type];
@@ -72,8 +72,8 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
       deepMergeObjects(newTransformation, transformationConfig)
     )
     setNewTransformation(null)
-    startTransition(async()=> {
-      // await updateCredits(userId, creditFee) // TO DO: return to update credits
+    startTransition(async () => {
+      await updateCredits(userId, -1) // TO DO: return to update credits
     })
   }
 
@@ -156,6 +156,29 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
             )}
           />
         }
+        <div className="media-uploader-field">
+          <CustomField
+            control={form.control}
+            name="publicId"
+            className="flex size-full flex-col"
+            render={({ field }) => (
+              <MediaUploader
+                onValueChange={field.onChange}
+                setImage={setImage}
+                publicId={field.value}
+                image={image}
+                type={type} />
+            )}
+          />
+          <TransformedImage
+            image={image}
+            type={type}
+            title={form.getValues().title}
+            isTransforming={isTransforming}
+            setIsTransforming={setIsTransforming}
+            transformationConfig={transformationConfig}
+          />
+        </div>
         <div className="flex flex-col gap-4">
           <Button
             className="submit-button capitalize"
