@@ -15,9 +15,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { defaultValues, transformationTypes, aspectRatioOptions } from "@/constants";
+import { defaultValues, transformationTypes, aspectRatioOptions, creditFee } from "@/constants";
 import { CustomField } from "./CustomField";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { AspectRatioKey, debounce, deepMergeObjects } from "@/lib/utils";
 import MediaUploader from "./MediaUploader";
 import TransformedImage from "./TransformedImage";
@@ -25,6 +25,7 @@ import { updateCredits } from "@/lib/actions/user.actions"
 import { getCldImageUrl } from "next-cloudinary";
 import { addImage, updateImage } from "@/lib/actions/image.actions";
 import { useRouter } from "next/navigation";
+import { InsufficientCreditsModal } from "./InsufficientCreditsModal";
 
 
 export const formSchema = z.object({
@@ -77,7 +78,7 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
     )
     setNewTransformation(null)
     startTransition(async () => {
-      await updateCredits(userId, -1) // TO DO: return to update credits
+      await updateCredits(userId, creditFee)
     })
   }
 
@@ -134,7 +135,7 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
           console.log(error)
         }
       }
-      if(action === 'Update'){
+      if (action === 'Update') {
         try {
           const updatedImage = await updateImage({
             image: {
@@ -154,9 +155,17 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
     }
     setIsSubmitting(false)
   }
+
+  useEffect(()=> {
+    if(image && (type==='restore' || type==='removeBackground')){
+      setNewTransformation(transformationType.config)
+    }
+  },[image, transformationType.config, type])
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        {creditBalance < Math.abs(creditFee) && <InsufficientCreditsModal />}
         <CustomField
           control={form.control}
           name={"title"}
