@@ -89,7 +89,7 @@ Make sure you have the following installed on your machine:
 **Cloning the Repository**
 
 ```bash
-git clone https://github.com/MokaSrinu/sm-imaginify.git
+git clone https://github.com/harshithaxkatakam/imaginify.git
 cd imaginify
 ```
 
